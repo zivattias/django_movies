@@ -15,10 +15,19 @@ class Movie(models.Model):
 
 
 class Rating(models.Model):
-
     movie = models.ForeignKey("Movie", on_delete=models.RESTRICT)
     rating = models.SmallIntegerField(db_column='rating', null=False, validators=[MinValueValidator(0),
                                                                                   MaxValueValidator(11)])
+    rating_date = models.DateField(db_column='date', null=False)
 
     class Meta:
         db_table = 'ratings'
+
+
+class Review(models.Model):
+    movie = models.ForeignKey("Movie", on_delete=models.RESTRICT)
+    review_text = models.TextField(db_column='text', null=False)
+    review_date = models.DateField(db_column='date', null=False)
+
+    class Meta:
+        db_table = 'reviews'
