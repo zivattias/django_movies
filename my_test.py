@@ -1,5 +1,4 @@
 import os
-import random
 
 import django
 
@@ -46,9 +45,9 @@ from movies_app.models import Movie, Rating
 # movies = Movie.objects.all().values_list('movie_name', 'duration')
 # print(movies[2])
 
-movies_qs = Movie.objects.all().values_list('movie_name', 'duration')
-print(movies_qs.query)
-movies_qs = movies_qs.filter(release_year__gt=2020)
-print(movies_qs.query)
-movies_qs = movies_qs[:2]
-print(movies_qs.query)
+# movies_qs = Movie.objects.all().values_list('movie_name', 'duration')
+# print(movies_qs.query)
+# movies_qs = movies_qs.filter(release_year__gt=2020)
+# print(movies_qs.query)
+# movies_qs = movies_qs[:2]
+# print(movies_qs.query)

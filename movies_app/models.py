@@ -1,9 +1,11 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+
 class Actor(models.Model):
 
-    name = models.CharField(max_length=256, db_column='name', null=False, blank=False)
+    name = models.CharField(
+        max_length=256, db_column='name', null=False, blank=False)
     birth_year = models.IntegerField(db_column='birth_year', null=False)
 
     def __str__(self):
@@ -12,8 +14,10 @@ class Actor(models.Model):
     class Meta:
         db_table = 'actors'
 
+
 class Movie(models.Model):
-    movie_name = models.CharField(db_column='movie_name', max_length=256, null=False)
+    movie_name = models.CharField(
+        db_column='movie_name', max_length=256, null=False)
     description = models.TextField(db_column='description', null=False)
     duration = models.FloatField(db_column='duration', null=False)
     release_year = models.IntegerField(db_column='release_year', null=False,
@@ -27,6 +31,7 @@ class Movie(models.Model):
     class Meta:
         db_table = 'movies'
 
+
 class MovieActor(models.Model):
     actor = models.ForeignKey(Actor, on_delete=models.CASCADE)
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
@@ -34,8 +39,7 @@ class MovieActor(models.Model):
     main_role = models.BooleanField(null=False, blank=False)
 
     def __str__(self):
-        return f"{self.actor.name} in movie {self.movie.name}"
-
+        return f"{self.actor.name} in movie {self.movie.movie_name}"
 
     class Meta:
         db_table = 'movie_actors'
