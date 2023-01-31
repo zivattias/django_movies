@@ -85,7 +85,7 @@ def get_atleast_once_main_actors() -> list[str]:
 
 # Get movies and amount of actors who played main roles 
 
-def get_movies_and_main_actors_amnt():
+def get_movies_and_main_actors_amnt() -> list[tuple[str, int]]:
     movies = Movie.objects.filter(movieactor__main_role=True).annotate(main_actors_amnt=Count('movieactor__actor_id'))
     return [(movie.movie_name, movie.main_actors_amnt) for movie in movies]
 
