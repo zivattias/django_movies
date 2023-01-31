@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from django.db.models.query import QuerySet
 from django.db.models import Q, FloatField
-from django.db.models.aggregates import Avg, Min, Max, Count
+from django.db.models.aggregates import Avg, Min, Max, Count, Sum
 import django
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "movies.settings"
@@ -67,8 +67,27 @@ def get_actors_min_max_rating() -> list[tuple[str, int]]:
 
 # Get movies with average salary for actors in each one
 
-def get_movies_with_avg_salary() -> QuerySet:
+def get_movies_with_avg_salary() -> list[tuple[str, float]]:
+    movies = Movie.objects.annotate(avg_salary=Avg('movieactor__salary', output_field=FloatField()))
+    return [(movie.movie_name, movie.avg_salary) for movie in movies]
 
+# Get actors with their average salaries
+
+def get_actors_avg_salary() -> list[tuple[str, float]]:
+    actors = Actor.objects.annotate(avg_salary=Avg('movieactor__salary', output_field=FloatField()))
+    return [(actor.name, actor.avg_salary) for actor in actors]
+
+# Get actors who played main roles at least once
+
+def get_atleast_once_main_actors() -> list[str]:
+    actors = Actor.objects.filter(movieactor__main_role=True)
+    return [actor.name for actor in actors]
+
+# Get movies and amount of actors who played main roles 
+
+def get_movies_and_main_actors_amnt():
+    movies = Movie.objects.filter(movieactor__main_role=True).annotate(main_actors_amnt=Count('movieactor__actor_id'))
+    return [(movie.movie_name, movie.main_actors_amnt) for movie in movies]
 
 if __name__ == "__main__":
     # print(get_actors_younger_than_50())
@@ -80,4 +99,7 @@ if __name__ == "__main__":
     # print(get_movies_and_avg_ratings())
     # print(get_ratings_before_2023())
     # print(get_actors_min_max_rating())
-    ...
+    # print(get_movies_with_avg_salary())
+    # print(get_actors_avg_salary())
+    # print(get_atleast_once_main_actors())
+    print(get_movies_and_main_actors_amnt())
