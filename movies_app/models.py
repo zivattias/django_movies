@@ -4,8 +4,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Actor(models.Model):
 
-    name = models.CharField(
-        max_length=256, db_column='name', null=False, blank=False)
+    name = models.CharField(max_length=256, db_column='name', null=False, blank=False)
     birth_year = models.IntegerField(db_column='birth_year', null=False)
 
     def __str__(self):
@@ -16,8 +15,7 @@ class Actor(models.Model):
 
 
 class Movie(models.Model):
-    movie_name = models.CharField(
-        db_column='movie_name', max_length=256, null=False)
+    movie_name = models.CharField(db_column='movie_name', max_length=256, null=False)
     description = models.TextField(db_column='description', null=False)
     duration = models.FloatField(db_column='duration', null=False)
     release_year = models.IntegerField(db_column='release_year', null=False,
