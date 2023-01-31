@@ -102,4 +102,4 @@ if __name__ == "__main__":
     # print(get_movies_with_avg_salary())
     # print(get_actors_avg_salary())
     # print(get_atleast_once_main_actors())
-    print(get_movies_and_main_actors_amnt())
+    # print(get_movies_and_main_actors_amnt())
