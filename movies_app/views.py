@@ -9,10 +9,8 @@ from movies_app.serializers import *
 # Create your views here.
 
 
-@api_view(http_method_names=["GET"])
-def get_movies_list(request: Request):
+def movies_list(request: Request):
     movies = Movie.objects.all()
-
     # Manual serialization:
     # result = [{'id': movie.id,
     #            'name': movie.movie_name,
@@ -40,7 +38,20 @@ def get_movies_list(request: Request):
     return Response(serializer.data)
 
 
-@api_view(http_method_names=["GET"])
+@api_view(http_method_names=["GET", "POST"])
+def get_movies_list(request: Request):
+    if request.method == "GET":
+        return movies_list(request)
+    elif request.method == "POST":
+        serializer = MovieDetailsSerializer(data=request.data)  # type: ignore
+        # serializer.data
+        if serializer.is_valid(raise_exception=True):
+            # serializer.validated_data
+            serializer.create(validated_data=serializer.validated_data)
+            return Response(status=status.HTTP_201_CREATED)
+
+
+@api_view(http_method_names=["GET", "PATCH"])
 def get_movie_details(request: Request, movie_id: int):
     # Manual 404:
     # try:
@@ -52,5 +63,78 @@ def get_movie_details(request: Request, movie_id: int):
 
     # Shortcut get_object_or_404():
     movie = get_object_or_404(Movie, id=movie_id)
-    serializer = MovieDetailsSerializer(movie, many=False)
+
+    if request.method == "GET":
+        serializer = MovieDetailsSerializer(movie, many=False)
+        return Response(serializer.data)
+
+    elif request.method == "PATCH":
+        # 'partial=True' will not check if all non-null fields aren't null in request.data
+        serializer = MovieDetailsSerializer(movie, data=request.data, many=False, partial=True)  # type: ignore
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(status=status.HTTP_200_OK)
+
+
+# Ratings:
+@api_view(http_method_names=["GET"])
+def get_ratings_list(request: Request):
+    ratings = Rating.objects.all()
+
+    if "min_rating" in request.query_params:
+        ratings = ratings.filter(rating__gte=request.query_params["min_rating"])
+    if "max_rating" in request.query_params:
+        ratings = ratings.filter(rating__lte=request.query_params["max_rating"])
+    if "rating_year" in request.query_params:
+        ratings = ratings.filter(rating_date__year=request.query_params["rating_year"])
+    if "rating_month" in request.query_params:
+        ratings = ratings.filter(
+            rating_date__month=request.query_params["rating_month"]
+        )
+    if "rating_day" in request.query_params:
+        ratings = ratings.filter(rating_date__day=request.query_params["rating_day"])
+    if ("rating_from_date" in request.query_params) and (
+        "rating_from_date" in request.query_params
+    ):
+        ratings = ratings.filter(
+            rating_date__range=(
+                request.query_params["rating_from_date"],
+                request.query_params["rating_to_date"],
+            )
+        )
+    else:
+        if "rating_from_date" in request.query_params:
+            ratings = ratings.filter(
+                rating_date__gte=request.query_params["rating_from_date"]
+            )
+        if "rating_to_date" in request.query_params:
+            ratings = ratings.filter(
+                rating_date__lte=request.query_params["rating_to_date"]
+            )
+
+    if not ratings:
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    serializer = RatingSerializer(instance=ratings, many=True)
     return Response(serializer.data)
+
+
+# Movie actors - missing filter() for GET method:
+@api_view(["GET", "POST"])
+def movie_actors(request: Request, movie_id: int):
+    if request.method == "GET":
+        movie_actors = MovieActor.objects.filter(movie_id=movie_id)
+        serializer = MovieActorSerializer(movie_actors, many=True)
+        return Response(serializer.data)
+
+    elif request.method == "POST":
+        serializer = AddMovieActorSerializer(
+            data=request.data,  # type: ignore
+            context={"movie_id": movie_id, "request": request},
+        )
+
+        get_object_or_404(Movie, id=movie_id)
+
+        if serializer.is_valid(raise_exception=True):
+            serializer.create(validated_data=serializer.validated_data)
+            return Response(status=status.HTTP_201_CREATED)
