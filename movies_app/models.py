@@ -1,6 +1,13 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+__all__ = [
+    'Actor',
+    'Movie',
+    'MovieActor',
+    'Rating',
+    'Review'
+]
 
 class Actor(models.Model):
 
