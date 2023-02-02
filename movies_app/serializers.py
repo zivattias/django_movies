@@ -3,6 +3,7 @@ from rest_framework.serializers import (
     StringRelatedField,
     Serializer,
     CharField,
+    DateField,
     PrimaryKeyRelatedField,
 )
 from rest_framework.fields import IntegerField, BooleanField
@@ -16,6 +17,8 @@ __all__ = [
     "AddMovieActorSerializer",
     "ActorSerializer",
     "MovieActorPatchSerializer",
+    "AddRatingSerializer",
+    "SpecificMovieRatingsSerializer",
 ]
 
 
@@ -38,6 +41,20 @@ class MovieDetailsSerializer(ModelSerializer):
     class Meta:
         model = Movie
         exclude = ["actors"]
+
+
+class AddRatingSerializer(Serializer):
+    rating = IntegerField(min_value=0, max_value=10)
+    rating_date = DateField()
+
+    def create(self, validated_data):
+        Rating.objects.create(movie_id=self.context["movie_id"], **validated_data)
+
+
+class SpecificMovieRatingsSerializer(ModelSerializer):
+    class Meta:
+        model = Rating
+        exclude = ["movie"]
 
 
 class RatingSerializer(ModelSerializer):

@@ -44,7 +44,7 @@ def get_movies_list(request: Request):
     if request.method == "GET":
         return movies_list(request)
     elif request.method == "POST":
-        serializer = MovieDetailsSerializer(data=request.data)  # type: ignore
+        serializer = MovieDetailsSerializer(data=request.data)
         # serializer.data
         if serializer.is_valid(raise_exception=True):
             # serializer.validated_data
@@ -71,7 +71,9 @@ def get_movie_details(request: Request, movie_id: int):
 
     elif request.method == "PATCH":
         # 'partial=True' will not check if all non-null fields aren't null in request.data
-        serializer = MovieDetailsSerializer(movie, data=request.data, many=False, partial=True)  # type: ignore
+        serializer = MovieDetailsSerializer(
+            movie, data=request.data, many=False, partial=True
+        )
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(status=status.HTTP_200_OK)
@@ -149,7 +151,7 @@ def movie_actors(request: Request, movie_id: int):
 
     elif request.method == "POST":
         serializer = AddMovieActorSerializer(
-            data=request.data,  # type: ignore
+            data=request.data,
             context={"movie_id": movie_id, "request": request},
         )
 
@@ -163,7 +165,7 @@ def movie_actors(request: Request, movie_id: int):
 # Actors:
 @api_view(["POST"])
 def create_actor(request: Request):
-    serializer = ActorSerializer(data=request.data)  # type: ignore
+    serializer = ActorSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         serializer.create(validated_data=serializer.validated_data)
         return Response(status=status.HTTP_201_CREATED)
@@ -177,7 +179,7 @@ def manipulate_actor(request: Request, actor_id: int):
         return Response(serializer.data)
 
     elif request.method == "PATCH":
-        serializer = ActorSerializer(actor, data=request.data, many=False, partial=True)  # type: ignore
+        serializer = ActorSerializer(actor, data=request.data, many=False, partial=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(status=status.HTTP_200_OK)
@@ -195,7 +197,34 @@ def alter_movie_actor(request: Request, movie_id: int, actor_id: int):
         return Response(status=status.HTTP_200_OK)
 
     elif request.method == "PATCH":
-        serializer = MovieActorPatchSerializer(movieactor, data=request.data, many=False, partial=True)  # type: ignore
+        serializer = MovieActorPatchSerializer(
+            movieactor, data=request.data, many=False, partial=True
+        )
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(status=status.HTTP_200_OK)
+
+
+@api_view(["POST", "GET"])
+def add_movie_rating(request: Request, movie_id: int):
+    if request.method == "POST":
+        serializer = AddRatingSerializer(
+            data=request.data, context={"movie_id": movie_id, "request": request}
+        )
+        if serializer.is_valid(raise_exception=True):
+            serializer.create(validated_data=serializer.validated_data)
+            return Response(status=status.HTTP_201_CREATED)
+
+    if request.method == "GET":
+        ratings = Rating.objects.filter(movie_id=movie_id)
+        if not ratings:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = SpecificMovieRatingsSerializer(instance=ratings, many=True)
+        return Response(serializer.data)
+
+
+@api_view(["DELETE"])
+def delete_movie_rating(request: Request, movie_id: int, rating_id: int):
+    rating = get_object_or_404(Rating, movie_id=movie_id, id=rating_id)
+    rating.delete()
+    return Response(status=status.HTTP_200_OK)
