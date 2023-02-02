@@ -9,6 +9,7 @@ from movies_app.serializers import *
 # Create your views here.
 
 
+# Movies:
 def movies_list(request: Request):
     movies = Movie.objects.all()
     # Manual serialization:
@@ -51,7 +52,7 @@ def get_movies_list(request: Request):
             return Response(status=status.HTTP_201_CREATED)
 
 
-@api_view(http_method_names=["GET", "PATCH"])
+@api_view(http_method_names=["GET", "PATCH", "DELETE"])
 def get_movie_details(request: Request, movie_id: int):
     # Manual 404:
     # try:
@@ -74,6 +75,10 @@ def get_movie_details(request: Request, movie_id: int):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(status=status.HTTP_200_OK)
+
+    elif request.method == "DELETE":
+        movie.delete()
+        return Response(status=status.HTTP_200_OK)
 
 
 # Ratings:
@@ -119,11 +124,26 @@ def get_ratings_list(request: Request):
     return Response(serializer.data)
 
 
-# Movie actors - missing filter() for GET method:
+# Movie actors:
 @api_view(["GET", "POST"])
 def movie_actors(request: Request, movie_id: int):
     if request.method == "GET":
         movie_actors = MovieActor.objects.filter(movie_id=movie_id)
+
+        if "main_roles" in request.query_params:
+            movie_actors = movie_actors.filter(main_role=True)
+        if "salary_from" in request.query_params:
+            movie_actors = movie_actors.filter(
+                salary__gte=request.query_params["salary_from"]
+            )
+        if "salary_to" in request.query_params:
+            movie_actors = movie_actors.filter(
+                salary__lte=request.query_params["salary_to"]
+            )
+
+        if not movie_actors:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
         serializer = MovieActorSerializer(movie_actors, many=True)
         return Response(serializer.data)
 
@@ -138,3 +158,44 @@ def movie_actors(request: Request, movie_id: int):
         if serializer.is_valid(raise_exception=True):
             serializer.create(validated_data=serializer.validated_data)
             return Response(status=status.HTTP_201_CREATED)
+
+
+# Actors:
+@api_view(["POST"])
+def create_actor(request: Request):
+    serializer = ActorSerializer(data=request.data)  # type: ignore
+    if serializer.is_valid(raise_exception=True):
+        serializer.create(validated_data=serializer.validated_data)
+        return Response(status=status.HTTP_201_CREATED)
+
+
+@api_view(["GET", "PATCH", "DELETE"])
+def manipulate_actor(request: Request, actor_id: int):
+    actor = get_object_or_404(Actor, id=actor_id)
+    if request.method == "GET":
+        serializer = ActorSerializer(instance=actor, many=False)
+        return Response(serializer.data)
+
+    elif request.method == "PATCH":
+        serializer = ActorSerializer(actor, data=request.data, many=False, partial=True)  # type: ignore
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(status=status.HTTP_200_OK)
+
+    elif request.method == "DELETE":
+        actor.delete()
+        return Response(status=status.HTTP_200_OK)
+
+
+@api_view(["DELETE", "PATCH"])
+def alter_movie_actor(request: Request, movie_id: int, actor_id: int):
+    movieactor = get_object_or_404(MovieActor, movie_id=movie_id, actor_id=actor_id)
+    if request.method == "DELETE":
+        movieactor.delete()
+        return Response(status=status.HTTP_200_OK)
+
+    elif request.method == "PATCH":
+        serializer = MovieActorPatchSerializer(movieactor, data=request.data, many=False, partial=True)  # type: ignore
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(status=status.HTTP_200_OK)

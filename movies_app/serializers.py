@@ -14,7 +14,17 @@ __all__ = [
     "RatingSerializer",
     "MovieActorSerializer",
     "AddMovieActorSerializer",
+    "ActorSerializer",
+    "MovieActorPatchSerializer",
 ]
+
+
+class ActorSerializer(ModelSerializer):
+    birth_year = IntegerField(max_value=2020, min_value=1900)
+
+    class Meta:
+        model = Actor
+        fields = "__all__"
 
 
 class MovieSerializer(ModelSerializer):
@@ -46,7 +56,7 @@ class ActorNameSerializer(ModelSerializer):
 
 
 class MovieActorSerializer(ModelSerializer):
-    actor = StringRelatedField(many=False)
+    # actor = StringRelatedField(many=False)
 
     class Meta:
         model = MovieActor
@@ -83,3 +93,9 @@ class AddMovieActorSerializer(Serializer):
 
     def create(self, validated_data):
         MovieActor.objects.create(movie_id=self.context["movie_id"], **validated_data)
+
+
+class MovieActorPatchSerializer(ModelSerializer):
+    class Meta:
+        model = MovieActor
+        fields = "__all__"
