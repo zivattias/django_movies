@@ -20,3 +20,14 @@ function dateToggle(elem) {
 }
 
 // Ex 2:
+function changeOpacity(link) {
+    const parentDiv = link.parentNode;
+    const image = parentDiv.querySelector("img");
+    if (image.style.opacity == 1) {
+        image.style.opacity = 0;
+        link.innerHTML = 'Display Image';
+    } else {
+        image.style.opacity = 1;
+        link.innerHTML = 'Hide Image';
+    }
+}

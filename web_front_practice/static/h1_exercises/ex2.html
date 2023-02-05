@@ -19,11 +19,26 @@
 
 <body>
 
-    <div>
+    <div class="container-fluid mt-5">
         <div class="row">
-            <div class="col-sm-4 bg-primary text-white">Tel Aviv</div>
-            <div class="col-sm-4 bg-dark text-white">Tokyo</div>
-            <div class="col-sm-4 bg-primary text-white">Medellin</div>
+            <div class="col" style="text-align: center;">
+                <p>Tel Aviv</p>
+                <a class="link-primary" style="cursor: pointer" onclick="changeOpacity(this)">Display Image</a>
+                <img class="rounded mx-auto d-block mt-4 mb-4" style="height: 200px; opacity: 0;"
+                    src="../imgs/tlv.jpeg">
+            </div>
+            <div class="col" style="text-align: center;">
+                <p>Tokyo</p>
+                <a class="link-primary" style="cursor: pointer" onclick="changeOpacity(this)">Display Image</a>
+                <img class="rounded mx-auto d-block mt-4 mb-4" style="height: 200px; opacity: 0;"
+                    src="../imgs/tokyo.jpeg">
+            </div>
+            <div class="col" style="text-align: center;">
+                <p>Medellin</p>
+                <a class="link-primary" style="cursor: pointer" onclick="changeOpacity(this)">Display Image</a>
+                <img class="rounded mx-auto d-block mt-4 mb-4" style="height: 200px; opacity: 0;"
+                    src="../imgs/medellin.jpeg">
+            </div>
         </div>
     </div>
 
