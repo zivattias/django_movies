@@ -7,6 +7,7 @@ django.setup()
 
 from movies_app.models import Movie, Rating
 
+
 # new_movie = Movie(movie_name='AAA', description=2020, duration=124, release_year=2020)
 # new_movie.save()
 
