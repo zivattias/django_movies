@@ -228,3 +228,7 @@ def delete_movie_rating(request: Request, movie_id: int, rating_id: int):
     rating = get_object_or_404(Rating, movie_id=movie_id, id=rating_id)
     rating.delete()
     return Response(status=status.HTTP_200_OK)
+
+
+def get_homepage(request: Request):
+    return render(request, "index.html")

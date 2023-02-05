@@ -55,7 +55,8 @@ ROOT_URLCONF = "movies.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        # Modified:
+        "DIRS": ["web_front_practice"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
