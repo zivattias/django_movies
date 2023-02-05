@@ -16,11 +16,11 @@ function switchColor(className) {
         let currClass = null;
         let newClass = null;
         if (elem.classList.contains('btn-primary')) {
-            currClass = 'btn-primary'
-            newClass = 'btn-danger'
+            currClass = 'btn-primary';
+            newClass = 'btn-danger';
         } else {
-            currClass = 'btn-danger'
-            newClass = 'btn-primary'
+            currClass = 'btn-danger';
+            newClass = 'btn-primary';
         }
         elem.classList.replace(currClass, newClass);
     }

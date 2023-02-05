@@ -232,3 +232,19 @@ def delete_movie_rating(request: Request, movie_id: int, rating_id: int):
 
 def get_homepage(request: Request):
     return render(request, "index.html")
+
+
+def h1_exercise(request: Request):
+    return render(request, "h1.html")
+
+
+# def h1_exercise_ex1(request: Request):
+#     return render(request, "h1/ex1.html")
+
+
+# def h1_exercise_ex2(request: Request):
+#     return render(request, "h1/ex2.html")
+
+
+# def h1_exercise_ex3(request: Request):
+#     return render(request, "h1/ex3.html")

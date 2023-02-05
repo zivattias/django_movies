@@ -5,3 +5,12 @@ h1 {
 .my-header {
     color: red;
 }
+
+.img-wrapper {
+    padding-top: 10px;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    object-fit: cover;
+}
