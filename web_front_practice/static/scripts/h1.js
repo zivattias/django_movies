@@ -6,9 +6,8 @@ let dd = today.getDate();
 
 
 function dateToggle(elem) {
+    datePar = document.getElementById('date-par');
     if (elem.innerHTML == 'Show Date') {
-        const d = new Date();
-        datePar = document.getElementById('date-par');
         datePar.style.opacity = 1;
         datePar.innerHTML = dd + '/' + mm + '/' + yyyy;
         elem.innerHTML = 'Hide Date';
